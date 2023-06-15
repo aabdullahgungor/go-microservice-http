@@ -12,6 +12,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+type IProductRepository interface {
+	GetAllProducts(ctx context.Context) ([]Product, error)
+	GetProductById(ctx context.Context, id string) (Product, error)
+	CreateProduct(ctx context.Context, product *Product) error
+	EditProduct(ctx context.Context, product *Product) error
+	DeleteProduct(ctx context.Context, id string) error
+}
+
 var (
 	ErrProductNotFound = errors.New("FromRepository - product not found")
 )
