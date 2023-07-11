@@ -1,12 +1,10 @@
-package repository
+package product
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
 
-	"github.com/aabdullahgungor/go-microservice-http/product/model"
 	"github.com/go-kit/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -14,16 +12,12 @@ import (
 )
 
 type IProductRepository interface {
-	GetAllProducts(ctx context.Context) ([]model.Product, error)
-	GetProductById(ctx context.Context, id string) (model.Product, error)
-	CreateProduct(ctx context.Context, product *model.Product) error
-	EditProduct(ctx context.Context, product *model.Product) error
+	GetAllProducts(ctx context.Context) ([]Product, error)
+	GetProductById(ctx context.Context, id string) (Product, error)
+	CreateProduct(ctx context.Context, product *Product) error
+	EditProduct(ctx context.Context, product *Product) error
 	DeleteProduct(ctx context.Context, id string) error
 }
-
-var (
-	ErrProductNotFound = errors.New("FromRepository - product not found")
-)
 
 type MongoDbProductRepository struct {
 	connectionPool *mongo.Database
@@ -37,11 +31,11 @@ func NewMongoDbProductRepository(db *mongo.Database, logger log.Logger) *MongoDb
 	}
 }
 
-func (m *MongoDbProductRepository) GetAllProducts(ctx context.Context) ([]model.Product, error) {
+func (m *MongoDbProductRepository) GetAllProducts(ctx context.Context) ([]Product, error) {
 
 	productCollection := m.connectionPool.Collection("product")
 
-	var products []model.Product
+	var products []Product
 	productCursor, err := productCollection.Find(ctx, bson.M{})
 	if err != nil {
 		panic(err)
@@ -53,23 +47,23 @@ func (m *MongoDbProductRepository) GetAllProducts(ctx context.Context) ([]model.
 	return products, err
 }
 
-func (m *MongoDbProductRepository) GetProductById(ctx context.Context, id string) (model.Product, error) {
+func (m *MongoDbProductRepository) GetProductById(ctx context.Context, id string) (Product, error) {
 
 	productCollection := m.connectionPool.Collection("product")
 
 	objId, _ := primitive.ObjectIDFromHex(id)
 
-	var product model.Product
+	var product Product
 	err := productCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&product)
 	if err != nil {
-		return model.Product{}, ErrProductNotFound
+		return Product{}, ErrProductNotFound
 	}
 
 	return product, nil
 
 }
 
-func (m *MongoDbProductRepository) CreateProduct(ctx context.Context, product *model.Product) error {
+func (m *MongoDbProductRepository) CreateProduct(ctx context.Context, product *Product) error {
 
 	productCollection := m.connectionPool.Collection("product")
 
@@ -84,7 +78,7 @@ func (m *MongoDbProductRepository) CreateProduct(ctx context.Context, product *m
 	return err
 }
 
-func (m *MongoDbProductRepository) EditProduct(ctx context.Context, product *model.Product) error {
+func (m *MongoDbProductRepository) EditProduct(ctx context.Context, product *Product) error {
 
 	productCollection := m.connectionPool.Collection("product")
 

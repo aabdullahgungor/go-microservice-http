@@ -1,11 +1,9 @@
-package service
+package product
 
 import (
 	"context"
 	"errors"
 
-	"github.com/aabdullahgungor/go-microservice-http/product/model"
-	"github.com/aabdullahgungor/go-microservice-http/product/repository"
 	"github.com/go-kit/log"
 )
 
@@ -16,41 +14,41 @@ var (
 )
 
 type IProductService interface {
-	GetAll(ctx context.Context) ([]model.Product, error)
-	GetById(ctx context.Context, id string) (model.Product, error)
-	Create(ctx context.Context, product *model.Product) error
-	Edit(ctx context.Context, product *model.Product) error
+	GetAll(ctx context.Context) ([]Product, error)
+	GetById(ctx context.Context, id string) (Product, error)
+	Create(ctx context.Context, product *Product) error
+	Edit(ctx context.Context, product *Product) error
 	Delete(ctx context.Context, id string) error
 }
 
 type DefaultProductService struct {
-	productRepo repository.IProductRepository
+	productRepo IProductRepository
 	logger      log.Logger
 }
 
-func NewDefaultProductService(pRepo repository.IProductRepository, logger log.Logger) *DefaultProductService {
+func NewDefaultProductService(pRepo IProductRepository, logger log.Logger) *DefaultProductService {
 	return &DefaultProductService{
 		productRepo: pRepo,
 		logger:      logger,
 	}
 }
 
-func (d *DefaultProductService) GetAll(ctx context.Context) ([]model.Product, error) {
+func (d *DefaultProductService) GetAll(ctx context.Context) ([]Product, error) {
 	return d.productRepo.GetAllProducts(ctx)
 }
 
-func (d *DefaultProductService) GetById(ctx context.Context, id string) (model.Product, error) {
+func (d *DefaultProductService) GetById(ctx context.Context, id string) (Product, error) {
 
 	product, err := d.productRepo.GetProductById(ctx, id)
 
 	if err != nil {
-		return model.Product{}, repository.ErrProductNotFound
+		return Product{}, ErrProductNotFound
 	}
 
 	return product, nil
 }
 
-func (d *DefaultProductService) Create(ctx context.Context, product *model.Product) error {
+func (d *DefaultProductService) Create(ctx context.Context, product *Product) error {
 
 	if product.Name == "" {
 		return ErrNameIsNotEmpty
@@ -59,7 +57,7 @@ func (d *DefaultProductService) Create(ctx context.Context, product *model.Produ
 	return d.productRepo.CreateProduct(ctx, product)
 }
 
-func (d *DefaultProductService) Edit(ctx context.Context, product *model.Product) error {
+func (d *DefaultProductService) Edit(ctx context.Context, product *Product) error {
 
 	if product.Id.String() == "" {
 		return ErrIDIsNotValid
@@ -71,7 +69,7 @@ func (d *DefaultProductService) Edit(ctx context.Context, product *model.Product
 	err := d.productRepo.EditProduct(ctx, product)
 
 	if err != nil {
-		return repository.ErrProductNotFound
+		return ErrProductNotFound
 	}
 
 	return nil
@@ -82,7 +80,7 @@ func (d *DefaultProductService) Delete(ctx context.Context, id string) error {
 	err := d.productRepo.DeleteProduct(ctx, id)
 
 	if err != nil {
-		return repository.ErrProductNotFound
+		return ErrProductNotFound
 	}
 
 	return nil
