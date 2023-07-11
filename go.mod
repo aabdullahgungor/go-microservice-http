@@ -3,6 +3,7 @@ module github.com/aabdullahgungor/go-microservice-http
 go 1.20
 
 require (
+	github.com/go-kit/kit v0.12.0
 	github.com/go-kit/log v0.2.0
 	go.mongodb.org/mongo-driver v1.11.7
 )
