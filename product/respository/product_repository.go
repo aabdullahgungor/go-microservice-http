@@ -41,7 +41,7 @@ func (m *MongoDbProductRepository) GetAllProducts(ctx context.Context) ([]Produc
 	productCollection := m.connectionPool.Collection("product")
 
 	var products []Product
-	productCursor, err := productCollection.Find(context.TODO(), bson.M{})
+	productCursor, err := productCollection.Find(ctx, bson.M{})
 	if err != nil {
 		panic(err)
 	}
