@@ -1,25 +1,50 @@
 package product
 
 import (
+	"net/url"
+	"strings"
+
 	"github.com/go-kit/kit/endpoint"
+	httptransport "github.com/go-kit/kit/transport/http"
 )
 
 type Endpoints struct {
-	GetAllProducts endpoint.Endpoint
-	GetProductById endpoint.Endpoint
-	CreateProduct  endpoint.Endpoint
-	EditProduct    endpoint.Endpoint
-	DeleteProduct  endpoint.Endpoint
+	GetAllProductsEndpoint endpoint.Endpoint
+	GetProductByIdEndpoint endpoint.Endpoint
+	CreateProductEndpoint  endpoint.Endpoint
+	EditProductEndpoint    endpoint.Endpoint
+	DeleteProductEndpoint  endpoint.Endpoint
 }
 
-func MakeEndpoints(s IProductService) Endpoints {
+func MakeServerEndpoints(s IProductService) Endpoints {
 	return Endpoints{
-		GetAllProducts: makeGetAllProductsEndpoint(s),
-		GetProductById: makeGetProductByIdEndpoint(s),
-		CreateProduct:  makeCreateProductEndpoint(s),
-		EditProduct:    makeEditProductEndpoint(s),
-		DeleteProduct:  makeDeleteProductEndpoint(s),
+		GetAllProductsEndpoint: makeGetAllProductsEndpoint(s),
+		GetProductByIdEndpoint: makeGetProductByIdEndpoint(s),
+		CreateProductEndpoint:  makeCreateProductEndpoint(s),
+		EditProductEndpoint:    makeEditProductEndpoint(s),
+		DeleteProductEndpoint:  makeDeleteProductEndpoint(s),
 	}
+}
+
+func MakeClientEndpoints(instance string) (Endpoints, error) {
+	if !strings.HasPrefix(instance, "http") {
+		instance = "http://" + instance
+	}
+	tgt, err := url.Parse(instance)
+	if err != nil {
+		return Endpoints{}, err
+	}
+	tgt.Path = ""
+
+	options := []httptransport.ClientOption{}
+
+	return Endpoints{
+		GetAllProductsEndpoint: httptransport.NewClient("GET", tgt, encodeGetAllProductsRequest, decodeGetAllProductsResponse, options...).Endpoint(),
+		GetProductByIdEndpoint: httptransport.NewClient("GET", tgt, encodeGetProductByIdRequest, decodeGetProductByIdResponse, options...).Endpoint(),
+		CreateProductEndpoint:  httptransport.NewClient("POST", tgt, encodeCreateProductRequest, decodeCreateProductResponse, options...).Endpoint(),
+		EditProductEndpoint:    httptransport.NewClient("PUT", tgt, encodeEditProductRequest, decodeEditProductResponse, options...).Endpoint(),
+		DeleteProductEndpoint:  httptransport.NewClient("DELETE", tgt, encodeDeleteProductRequest, decodeDeleteProductResponse, options...).Endpoint(),
+	}, nil
 }
 
 func makeGetAllProductsEndpoint(s IProductService) endpoint.Endpoint {
