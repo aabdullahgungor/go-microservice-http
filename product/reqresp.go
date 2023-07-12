@@ -1,6 +1,9 @@
 package product
 
-import "context"
+import (
+	"context"
+	"net/http"
+)
 
 type GetAllProductsRequest struct {
 	ctx context.Context
@@ -48,3 +51,13 @@ type DeleteProductResponse struct {
 }
 
 func (r DeleteProductResponse) error() error { return r.Err }
+
+func decodeGetAllProductsRequest(ctx context.Context, r *http.Request) (request interface{}, err error) {
+	var req GetAllProductsRequest
+	req.ctx = ctx
+	return req, nil
+}
+
+func encodeGetAllProductsResponse(ctx context.Context, r *http.Request) (request interface{}, err error) {
+
+}

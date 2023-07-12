@@ -39,11 +39,11 @@ func MakeClientEndpoints(instance string) (Endpoints, error) {
 	options := []httptransport.ClientOption{}
 
 	return Endpoints{
-		GetAllProductsEndpoint: httptransport.NewClient("GET", tgt, encodeGetAllProductsRequest, decodeGetAllProductsResponse, options...).Endpoint(),
-		GetProductByIdEndpoint: httptransport.NewClient("GET", tgt, encodeGetProductByIdRequest, decodeGetProductByIdResponse, options...).Endpoint(),
-		CreateProductEndpoint:  httptransport.NewClient("POST", tgt, encodeCreateProductRequest, decodeCreateProductResponse, options...).Endpoint(),
-		EditProductEndpoint:    httptransport.NewClient("PUT", tgt, encodeEditProductRequest, decodeEditProductResponse, options...).Endpoint(),
-		DeleteProductEndpoint:  httptransport.NewClient("DELETE", tgt, encodeDeleteProductRequest, decodeDeleteProductResponse, options...).Endpoint(),
+		GetAllProductsEndpoint: httptransport.NewClient("GET", tgt, decodeGetAllProductsRequest, encodeGetAllProductsResponse, options...).Endpoint(),
+		GetProductByIdEndpoint: httptransport.NewClient("GET", tgt, decodeGetProductByIdRequest, encodeGetProductByIdResponse, options...).Endpoint(),
+		CreateProductEndpoint:  httptransport.NewClient("POST", tgt, decodeCreateProductRequest, encodeCreateProductResponse, options...).Endpoint(),
+		EditProductEndpoint:    httptransport.NewClient("PUT", tgt, decodeEditProductRequest, encodeEditProductResponse, options...).Endpoint(),
+		DeleteProductEndpoint:  httptransport.NewClient("DELETE", tgt, decodeDeleteProductRequest, encodeDeleteProductResponse, options...).Endpoint(),
 	}, nil
 }
 
