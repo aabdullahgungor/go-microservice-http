@@ -1,4 +1,4 @@
-module github.com/aabdullahgungor/go-microservice-http
+module github.com/aabdullahgungor/product-service
 
 go 1.20
 
